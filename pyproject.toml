@@ -1,0 +1,11 @@
+[project]
+name = "modelling-bot"
+version = "0.1.0"
+description = "bot for booking modelling service"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.22.0",
+    "pydantic-settings>=2.10.1",
+    "redis>=6.4.0",
+]
