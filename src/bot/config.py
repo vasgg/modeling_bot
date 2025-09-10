@@ -11,7 +11,9 @@ class Settings(BaseSettings):
     SHOP_ID: int
     REDIS_URL: RedisDsn
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False
+    )
 
 
 def get_settings():

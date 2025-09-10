@@ -13,7 +13,10 @@ logger = logging.getLogger(__name__)
 
 class UpdatesDumperMiddleware(BaseMiddleware):
     async def __call__(
-        self, handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]], event: Update, data: dict[str, Any]
+        self,
+        handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+        event: Update,
+        data: dict[str, Any],
     ) -> Any:
         json_event = event.model_dump_json(exclude_unset=True)
 

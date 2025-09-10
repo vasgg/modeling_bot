@@ -28,12 +28,18 @@ async def moderator_reply_dispatch(message: Message, settings) -> bool:
         return False
 
     if message.photo:
-        await message.bot.send_photo(chat_id=target_chat_id, photo=message.photo[-1].file_id, caption=message.caption)
+        await message.bot.send_photo(
+            chat_id=target_chat_id,
+            photo=message.photo[-1].file_id,
+            caption=message.caption,
+        )
         return True
 
     if message.document:
         await message.bot.send_document(
-            chat_id=target_chat_id, document=message.document.file_id, caption=message.caption
+            chat_id=target_chat_id,
+            document=message.document.file_id,
+            caption=message.caption,
         )
         return True
 
@@ -45,10 +51,15 @@ async def moderator_reply_dispatch(message: Message, settings) -> bool:
 
 
 async def answer_with_photo(
-    message: Message, caption: str, file_name: str, markup: InlineKeyboardMarkup | None = None
+    message: Message,
+    caption: str,
+    file_name: str,
+    markup: InlineKeyboardMarkup | None = None,
 ):
     await message.answer_photo(
-        photo=FSInputFile(str(Path(__file__).resolve().parents[1] / "internal" / file_name)),
+        photo=FSInputFile(
+            str(Path(__file__).resolve().parents[1] / "internal" / file_name)
+        ),
         caption=caption,
         reply_markup=markup,
     )

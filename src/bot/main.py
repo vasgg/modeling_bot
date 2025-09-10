@@ -31,7 +31,10 @@ async def main():
     setup_logs("modelling_bot")
     settings = get_settings()
 
-    bot = Bot(token=settings.BOT_TOKEN.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(
+        token=settings.BOT_TOKEN.get_secret_value(),
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+    )
     storage = RedisStorage.from_url(settings.REDIS_URL.unicode_string())
 
     await init_global(storage, bot)
