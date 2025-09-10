@@ -9,15 +9,15 @@ from aiogram.fsm.storage.memory import SimpleEventIsolation
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import BotCommand
 
-from handlers.base_handlers import router as base_router
-from handlers.errors_handler import router as errors_router
-from internal.notify_admin import on_shutdown, on_startup
+from bot.handlers.base_handlers import router as base_router
+from bot.handlers.errors_handler import router as errors_router
+from bot.internal.notify_admin import on_shutdown, on_startup
 
-from internal.helpers import setup_logs
-from middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
+from bot.internal.helpers import setup_logs
+from bot.middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
 
-from global_ctx import init_global
-from config import get_settings
+from bot.global_ctx import init_global
+from bot.config import get_settings
 
 
 async def set_bot_commands(bot: Bot) -> None:
