@@ -15,4 +15,4 @@ dependencies = [
 ]
 
 [project.scripts]
-bot-run = "main:run_main"
+bot-run = "bot.main:run_main"
