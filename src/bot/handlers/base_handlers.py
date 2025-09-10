@@ -233,6 +233,14 @@ async def on_document(message: Message, state: FSMContext, settings: Settings):
     await message.answer(texts["photo_sent"])
 
 
+@router.message(F.text)
+async def text_reply(message: Message, settings: Settings):
+    if message.from_user.id != settings.MODERATOR:
+        await message.answer(texts["no_photo_message"])
+        return
+    await moderator_reply_dispatch(message, settings)
+
+
 @router.message(
     lambda message, settings: message.chat.id == settings.MODEL_CHAT_ID,
     lambda message, settings: message.from_user.id == settings.MODERATOR,
@@ -259,10 +267,3 @@ async def moderator_reply_handler(message: Message, state: FSMContext) -> None:
 
     if message.text:
         await message.bot.send_message(chat_id=user_id, text=message.text)
-
-
-@router.message(F.text)
-async def text_reply(message: Message, settings: Settings):
-    if message.from_user.id != settings.MODERATOR:
-        await message.answer(texts["no_photo_message"])
-        return
