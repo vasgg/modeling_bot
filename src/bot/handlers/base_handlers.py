@@ -33,6 +33,7 @@ from bot.keyboards import (
     get_requirements_kb,
     get_keep_rejected_photo_buttons,
 )
+from json import dumps
 
 logger = logging.getLogger(__name__)
 
@@ -150,13 +151,34 @@ async def model_payment_handler(callback: CallbackQuery, settings: Settings):
     await callback.answer()
     amount = 3000 * 100
     prices = [LabeledPrice(label="Оплатить", amount=amount)]
+    description = "Услуга моделирования."
+    provider_data = dumps({
+      "receipt": {
+        "items": [
+          {
+            "description": description,
+            "quantity": 1,
+            "amount": {
+              "value": 3000,
+              "currency": "RUB"
+            },
+            "vat_code": 1,
+            "payment_mode": "full_payment",
+            "payment_subject": "service"
+          }
+        ]
+      }
+    })
     await callback.message.answer_invoice(
-        title="Услуга моделирования.",
+        title=description,
         description=texts["payment_description"],
         payload="model",
         provider_token=settings.PAYMENT_PROVIDER_TOKEN.get_secret_value(),
         currency="RUB",
         prices=prices,
+        provider_data=provider_data,
+        need_email = True,
+        send_email_to_provider = True,
     )
 
 
