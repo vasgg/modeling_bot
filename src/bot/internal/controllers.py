@@ -35,6 +35,14 @@ async def moderator_reply_dispatch(message: Message, settings) -> bool:
         )
         return True
 
+    if message.video:
+        await message.bot.send_video(
+            chat_id=target_chat_id,
+            video=message.video.file_id,
+            caption=message.caption,
+        )
+        return True
+
     if message.document:
         await message.bot.send_document(
             chat_id=target_chat_id,

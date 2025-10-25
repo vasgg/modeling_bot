@@ -38,13 +38,16 @@ from json import dumps
 logger = logging.getLogger(__name__)
 
 router = Router()
-image_types = {
+file_types = {
     "image/jpeg",
     "image/png",
     "image/webp",
     "image/heic",
     "image/heif",
     "image/tiff",
+    "video/mp4",
+    "video/quicktime",
+    "application/pdf",
 }
 
 
@@ -152,23 +155,22 @@ async def model_payment_handler(callback: CallbackQuery, settings: Settings):
     amount = 3000 * 100
     prices = [LabeledPrice(label="Оплатить", amount=amount)]
     description = "Услуга моделирования."
-    provider_data = dumps({
-      "receipt": {
-        "items": [
-          {
-            "description": description,
-            "quantity": 1,
-            "amount": {
-              "value": 3000,
-              "currency": "RUB"
-            },
-            "vat_code": 1,
-            "payment_mode": "full_payment",
-            "payment_subject": "service"
-          }
-        ]
-      }
-    })
+    provider_data = dumps(
+        {
+            "receipt": {
+                "items": [
+                    {
+                        "description": description,
+                        "quantity": 1,
+                        "amount": {"value": 3000, "currency": "RUB"},
+                        "vat_code": 1,
+                        "payment_mode": "full_payment",
+                        "payment_subject": "service",
+                    }
+                ]
+            }
+        }
+    )
     await callback.message.answer_invoice(
         title=description,
         description=texts["payment_description"],
@@ -177,8 +179,8 @@ async def model_payment_handler(callback: CallbackQuery, settings: Settings):
         currency="RUB",
         prices=prices,
         provider_data=provider_data,
-        need_email = True,
-        send_email_to_provider = True,
+        need_email=True,
+        send_email_to_provider=True,
     )
 
 
@@ -224,6 +226,20 @@ async def on_photo(message: Message, state: FSMContext, settings: Settings):
     )
 
 
+@router.message(F.video)
+async def on_video(message: Message, state: FSMContext, settings: Settings):
+    if message.from_user.id == settings.MODERATOR:
+        if message.chat.id == settings.MODEL_CHAT_ID:
+            return
+        await moderator_reply_dispatch(message, settings)
+        return
+
+    data = await state.get_data()
+    if not data.get("paid", False):
+        await message.answer(texts["not_paid_or_work_in_progress"])
+        return
+
+
 @router.message(F.document)
 async def on_document(message: Message, state: FSMContext, settings: Settings):
     if message.from_user.id == settings.MODERATOR:
@@ -231,7 +247,7 @@ async def on_document(message: Message, state: FSMContext, settings: Settings):
         return
 
     doc = message.document
-    if not doc or (doc.mime_type not in image_types):
+    if not doc or (doc.mime_type not in file_types):
         return
 
     data = await state.get_data()
@@ -256,9 +272,21 @@ async def on_document(message: Message, state: FSMContext, settings: Settings):
 
 
 @router.message(F.text)
-async def text_reply(message: Message, settings: Settings):
+async def text_reply(message: Message, settings: Settings, state: FSMContext):
     if message.from_user.id != settings.MODERATOR:
-        await message.answer(texts["no_photo_message"])
+        data = await state.get_data()
+        if not data.get("paid", False):
+            await message.answer(texts["no_photo_message"])
+        else:
+            name = (
+                message.from_user.full_name + "\n@" + message.from_user.username
+                if message.from_user.username
+                else message.from_user.full_name
+            )
+            await message.bot.send_message(
+                settings.MODEL_CHAT_ID,
+                text=f"<b>uid:{message.from_user.id}\n{name}</b>\n\n{message.text}",
+            )
         return
     await moderator_reply_dispatch(message, settings)
 
@@ -269,7 +297,6 @@ async def text_reply(message: Message, settings: Settings):
     lambda message: bool(message.reply_to_message),
 )
 async def moderator_reply_handler(message: Message, state: FSMContext) -> None:
-    """Forward moderator replies from log chat to the original user."""
     logger.info(
         "Processing moderator reply %s to %s",
         message.message_id,
@@ -284,6 +311,30 @@ async def moderator_reply_handler(message: Message, state: FSMContext) -> None:
     if user_id is None:
         logger.warning(
             "No user_id found for log message %s", message.reply_to_message.message_id
+        )
+        return
+
+    if message.video:
+        await message.bot.send_video(
+            chat_id=user_id,
+            video=message.video.file_id,
+            caption=message.caption,
+        )
+        return
+
+    if message.photo:
+        await message.bot.send_photo(
+            chat_id=user_id,
+            photo=message.photo[-1].file_id,
+            caption=message.caption,
+        )
+        return
+
+    if message.document:
+        await message.bot.send_document(
+            chat_id=user_id,
+            document=message.document.file_id,
+            caption=message.caption,
         )
         return
 
