@@ -4,9 +4,8 @@ from aiogram.types import FSInputFile, InlineKeyboardMarkup, Message
 
 
 def _extract_uid_from_reply(reply: Message) -> int | None:
-    if not reply or not reply.caption:
-        return None
-    first_line = reply.caption.split("\n", 1)[0].strip()
+    source = reply.caption or reply.text or ""
+    first_line = source.split("\n", 1)[0].strip()
     if not first_line.startswith("uid:"):
         return None
     try:
