@@ -27,7 +27,7 @@ def get_model_kb():
         callback_data=ModelMenuOption(action=ModelMenuBtns.REQUIREMENTS_BEFORE_PAYMENT),
     )
     kb.button(
-        text="📝 Часто задаваемые вопросы", url="https://staisupov.ru/mod#rec1237052556"
+        text="📝 Часто задаваемые вопросы", url="https://mod.staisupov.ru/"
     )
     kb.button(text="Перейти к  оплате", callback_data="payment")
     kb.adjust(1)
@@ -41,7 +41,7 @@ def get_requirements_kb():
         callback_data=ModelMenuOption(action=ModelMenuBtns.DETAILS),
     )
     kb.button(
-        text="📝 Часто задаваемые вопросы", url="https://staisupov.ru/mod#rec1237052556"
+        text="📝 Часто задаваемые вопросы", url="https://mod.staisupov.ru/"
     )
     kb.button(text="Перейти к  оплате", callback_data="payment")
     kb.adjust(1)
@@ -55,7 +55,7 @@ def get_details_kb():
         callback_data=ModelMenuOption(action=ModelMenuBtns.REQUIREMENTS_BEFORE_PAYMENT),
     )
     kb.button(
-        text="📝 Часто задаваемые вопросы", url="https://staisupov.ru/mod#rec1237052556"
+        text="📝 Часто задаваемые вопросы", url="https://mod.staisupov.ru/"
     )
     kb.button(text="Перейти к  оплате", callback_data="payment")
     kb.adjust(1)
