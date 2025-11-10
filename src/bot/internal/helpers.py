@@ -17,11 +17,11 @@ class CustomFormatter(logging.Formatter):
 
 
 main_template = {
-    "format": "%(asctime)s | %(message)s",
+    "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
     "datefmt": "%d.%m.%Y %H:%M:%S%z",
 }
 error_template = {
-    "format": "%(asctime)s [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
+    "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
     "datefmt": "%d.%m.%Y %H:%M:%S%z",
 }
 
@@ -66,7 +66,7 @@ def get_logging_config(app_name: str):
                 "level": "INFO",
                 "formatter": "main",
                 "filename": f"logs/{app_name}.log",
-                "maxBytes": 50000000,
+                "maxBytes": 5000000,
                 "backupCount": 3,
                 "encoding": "utf-8",
             },
