@@ -38,30 +38,23 @@ def get_logging_config(app_name: str):
         "disable_existing_loggers": False,
         "formatters": {
             "main": {
-                "()": CustomFormatter,
-                "format": main_template["format"],
-                "datefmt": main_template["datefmt"],
+                "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
+                "datefmt": "%d.%m.%Y %H:%M:%S%z",
             },
             "errors": {
-                "()": CustomFormatter,
-                "format": error_template["format"],
-                "datefmt": error_template["datefmt"],
+                "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
+                "datefmt": "%d.%m.%Y %H:%M:%S%z",
             },
         },
         "handlers": {
-            "stdout": {
-                "class": "logging.StreamHandler",
-                "level": "INFO",
-                "formatter": "main",
-                "stream": sys.stdout,
-            },
+            "stdout": {"class": "logging.StreamHandler", "level": "DEBUG", "formatter": "main", "stream": sys.stdout},
             "stderr": {
                 "class": "logging.StreamHandler",
                 "level": "WARNING",
                 "formatter": "errors",
                 "stream": sys.stderr,
             },
-            "file": {
+            "file_info": {
                 "()": RotatingFileHandler,
                 "level": "INFO",
                 "formatter": "main",
@@ -70,11 +63,15 @@ def get_logging_config(app_name: str):
                 "backupCount": 3,
                 "encoding": "utf-8",
             },
-        },
-        "loggers": {
-            "root": {
+            "file_debug": {
+                "()": RotatingFileHandler,
                 "level": "DEBUG",
-                "handlers": ["stdout", "stderr", "file"],
+                "formatter": "main",
+                "filename": f"logs/{app_name}_debug.log",
+                "maxBytes": 5000000,
+                "backupCount": 3,
+                "encoding": "utf-8",
             },
         },
+        "loggers": {"root": {"level": "DEBUG", "handlers": ["stdout", "stderr", "file_info", "file_debug"]}},
     }
