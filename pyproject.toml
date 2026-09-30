@@ -1,18 +1,34 @@
-[build-system]
-requires = ["setuptools>=58.0.4", "wheel>=0.37.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "modelling-bot"
 version = "0.1.0"
 description = "bot for booking modelling service"
-readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "aiogram>=3.22.0",
-    "pydantic-settings>=2.10.1",
-    "redis>=6.4.0",
+    "aiogram[redis]>=3.31.0",
+    "pydantic-settings>=2.15.0",
 ]
 
 [project.scripts]
 bot-run = "bot.main:run_main"
+
+[build-system]
+requires = ["uv_build>=0.12,<0.13"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "bot"
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]  # cyrillic lookalike chars in texts
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.9",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/bot/internal/lexicon.py" = ["E501"]

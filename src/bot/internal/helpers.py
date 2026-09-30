@@ -1,77 +1,60 @@
 import logging.config
 import sys
-from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-
-class CustomFormatter(logging.Formatter):
-    def formatTime(self, record, datefmt=None):
-        ct = datetime.fromtimestamp(record.created).astimezone()
-        if datefmt:
-            base_time = ct.strftime("%d.%m.%Y %H:%M:%S")
-            msecs = f"{int(record.msecs):03d}"
-            tz = ct.strftime("%z")
-            return f"{base_time}.{msecs}{tz}"
-        return super().formatTime(record, datefmt)
+LOG_FORMAT = (
+    "%(asctime)s.%(msecs)03d [%(levelname)8s] "
+    "[%(module)s:%(funcName)s:%(lineno)d] %(message)s"
+)
+LOG_DATEFMT = "%d.%m.%Y %H:%M:%S%z"
 
 
-main_template = {
-    "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
-    "datefmt": "%d.%m.%Y %H:%M:%S%z",
-}
-error_template = {
-    "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
-    "datefmt": "%d.%m.%Y %H:%M:%S%z",
-}
-
-
-def setup_logs(app_name: str):
+def setup_logs(app_name: str) -> None:
     Path("logs").mkdir(parents=True, exist_ok=True)
-    logging_config = get_logging_config(app_name)
-    logging.config.dictConfig(logging_config)
+    logging.config.dictConfig(get_logging_config(app_name))
 
 
-def get_logging_config(app_name: str):
+def get_logging_config(app_name: str) -> dict:
+    file_handler = {
+        "()": RotatingFileHandler,
+        "formatter": "main",
+        "maxBytes": 5_000_000,
+        "backupCount": 3,
+        "encoding": "utf-8",
+    }
     return {
         "version": 1,
         "disable_existing_loggers": False,
-        "formatters": {
-            "main": {
-                "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
-                "datefmt": "%d.%m.%Y %H:%M:%S%z",
-            },
-            "errors": {
-                "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
-                "datefmt": "%d.%m.%Y %H:%M:%S%z",
-            },
-        },
+        "formatters": {"main": {"format": LOG_FORMAT, "datefmt": LOG_DATEFMT}},
         "handlers": {
-            "stdout": {"class": "logging.StreamHandler", "level": "DEBUG", "formatter": "main", "stream": sys.stdout},
+            "stdout": {
+                "class": "logging.StreamHandler",
+                "level": "DEBUG",
+                "formatter": "main",
+                "stream": sys.stdout,
+            },
             "stderr": {
                 "class": "logging.StreamHandler",
                 "level": "WARNING",
-                "formatter": "errors",
+                "formatter": "main",
                 "stream": sys.stderr,
             },
             "file_info": {
-                "()": RotatingFileHandler,
+                **file_handler,
                 "level": "INFO",
-                "formatter": "main",
                 "filename": f"logs/{app_name}.log",
-                "maxBytes": 5000000,
-                "backupCount": 3,
-                "encoding": "utf-8",
             },
             "file_debug": {
-                "()": RotatingFileHandler,
+                **file_handler,
                 "level": "DEBUG",
-                "formatter": "main",
                 "filename": f"logs/{app_name}_debug.log",
-                "maxBytes": 5000000,
-                "backupCount": 3,
-                "encoding": "utf-8",
             },
         },
-        "loggers": {"root": {"level": "DEBUG", "handlers": ["stdout", "stderr", "file_info", "file_debug"]}},
+        "loggers": {
+            "root": {
+                "level": "DEBUG",
+                "handlers": ["stdout", "stderr", "file_info", "file_debug"],
+            }
+        },
     }

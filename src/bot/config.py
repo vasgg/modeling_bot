@@ -16,5 +16,5 @@ class Settings(BaseSettings):
     )
 
 
-def get_settings():
+def get_settings() -> Settings:
     return Settings()

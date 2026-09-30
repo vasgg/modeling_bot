@@ -1,10 +1,10 @@
 from aiogram.filters.callback_data import CallbackData
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.internal.enums import (
-    ModelMenuBtns,
-    PhotoMenuBtns,
-)
+from bot.internal.enums import ModelMenuBtns, PhotoMenuBtns
+
+FAQ_URL = "https://mod.staisupov.ru/"
 
 
 class ModelMenuOption(CallbackData, prefix="model_menu"):
@@ -16,7 +16,7 @@ class UploadPhotoOption(CallbackData, prefix="photo_menu"):
     chat_id: int
 
 
-def get_model_kb():
+def get_model_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="💰 Стоимость и сроки",
@@ -26,43 +26,37 @@ def get_model_kb():
         text="📋 Требования к фото",
         callback_data=ModelMenuOption(action=ModelMenuBtns.REQUIREMENTS_BEFORE_PAYMENT),
     )
-    kb.button(
-        text="📝 Часто задаваемые вопросы", url="https://mod.staisupov.ru/"
-    )
-    kb.button(text="Перейти к  оплате", callback_data="payment")
+    kb.button(text="📝 Часто задаваемые вопросы", url=FAQ_URL)
+    kb.button(text="Перейти к оплате", callback_data="payment")
     kb.adjust(1)
     return kb.as_markup()
 
 
-def get_requirements_kb():
+def get_requirements_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="💰 Стоимость и сроки",
         callback_data=ModelMenuOption(action=ModelMenuBtns.DETAILS),
     )
-    kb.button(
-        text="📝 Часто задаваемые вопросы", url="https://mod.staisupov.ru/"
-    )
-    kb.button(text="Перейти к  оплате", callback_data="payment")
+    kb.button(text="📝 Часто задаваемые вопросы", url=FAQ_URL)
+    kb.button(text="Перейти к оплате", callback_data="payment")
     kb.adjust(1)
     return kb.as_markup()
 
 
-def get_details_kb():
+def get_details_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="📋 Требования к фото",
         callback_data=ModelMenuOption(action=ModelMenuBtns.REQUIREMENTS_BEFORE_PAYMENT),
     )
-    kb.button(
-        text="📝 Часто задаваемые вопросы", url="https://mod.staisupov.ru/"
-    )
-    kb.button(text="Перейти к  оплате", callback_data="payment")
+    kb.button(text="📝 Часто задаваемые вопросы", url=FAQ_URL)
+    kb.button(text="Перейти к оплате", callback_data="payment")
     kb.adjust(1)
     return kb.as_markup()
 
 
-def get_photo_buttons(chat_id: int):
+def get_photo_buttons(chat_id: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="✅",
@@ -75,7 +69,7 @@ def get_photo_buttons(chat_id: int):
     return kb.as_markup()
 
 
-def get_rejected_photo_buttons():
+def get_rejected_photo_buttons() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="📋 Требования к фото",
@@ -89,7 +83,7 @@ def get_rejected_photo_buttons():
     return kb.as_markup()
 
 
-def get_keep_rejected_photo_buttons():
+def get_keep_rejected_photo_buttons() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="Оставить прежнее фото",
@@ -107,7 +101,7 @@ def get_keep_rejected_photo_buttons():
     return kb.as_markup()
 
 
-def get_photo_requirements_buttons():
+def get_photo_requirements_buttons() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="Оставить прежнее фото",
@@ -121,7 +115,7 @@ def get_photo_requirements_buttons():
     return kb.as_markup()
 
 
-def get_accept_button(chat_id: int):
+def get_accept_button(chat_id: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="✅",
